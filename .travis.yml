@@ -1,0 +1,19 @@
+language: node_js
+cache:
+  directories:
+  - node_modules
+node_js:
+- 12.16.1
+notifications:
+  email: false
+script:
+- npm run build
+before_deploy:
+- cd build
+deploy:
+  skip_cleanup: true
+  provider: s3
+  bucket: com.shepherdjerred.tripsim
+  access_key_id: AKIAJIZ6FW2EW52PBBZA
+  secret_access_key:
+    secure: DZbeUnjNJk5G6wQtZfnT7EmyvyePyt9Lms77VQSD6VNzgIaY9wHSJ6KBbB7/CcYJcQBP8x+BeuHlyH9HEyndj8p0LsmOnb5x+MSSvkO7liR/2LGvuYO+BAoJy6KYf0tFLPYbIshX9pUyp8zMU9zJNiULR6MBzO3cUFhKr127mGnt266lAhEn3jYoJ7ro0sxpTSt9j96xtRV3f3QWoLwHSfusuL4UZa8RL1B6Y2+qAYZARK6qfLb1o14GrfQ/zCthKhaECD2FOQ11utUZROHfVPHD1goWqz9MIi7bBIPw1IhY65iP1PoJpoplUCjyWLk+xgncKYuo0N+wn8MFHA3nzSiyjxXS84A2tqCzFecPk6Oagt/mWJTnqnlpUs3CU0c2N4FHjLXA4N2NyWdhbFWDd3dgMQMcZSveUTBtNdscEFsAYFfEt5+ZPU1f5zjko2v+xgOw2KpxxmPSotZey7HwVpBP+OSmaTm9RQ8C8L/hJXb7fSz2imlFE3CG43PpyOoXI6Nr4vPk/Fn3rADy39Kqc1+TjyvgkocKUg9e18lEhYWdddi2mVDarVx2aa6INvQCE+7vszXbuVikSGvRWjFUqbM8g3t02RWYbYx3l+6bZ55XFQM5a4cZHyune1wFqgft54OObagLe7oawIfknbim0hw0Vv5wCtJ80uEzUA9NNGM=
