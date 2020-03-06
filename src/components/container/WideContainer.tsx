@@ -1,12 +1,10 @@
 import React from "react";
-import {Loader} from "../loader/Loader"
+import {SimulationFetcher} from '../simulator/SimulationFetcher'
 
 export const WideContainer = React.memo((props) => {
   return (
       <div className='container'>
-        <Loader isLoading={false}>
-          {props.children}
-        </Loader>
+        <SimulationFetcher/>
       </div>
   )
 });

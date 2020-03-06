@@ -1,4 +1,11 @@
 import React, {Component} from "react";
+import axios from "axios"
+import {Loader} from "../loader/Loader";
+
+type SimulationFetcherState = {
+  isLoading: boolean
+  result: string
+}
 
 type Range = {
   minimum: number
@@ -10,6 +17,30 @@ type Vehicle = {
   capacity: number
   costPerDay: number
   milesPerGallon: number
+}
+
+type JsonRange = {
+  min: number
+  max: number
+}
+
+type JsonVehicle = {
+  name: string
+  capacity: number
+  cost_per_day: number
+  miles_per_gallon: number
+}
+
+type JsonSimulationRequest = {
+  vehicles: JsonVehicle[]
+  distance: number
+  average_cost_per_gallon_of_gas: number
+  average_cost_per_night_at_hotel: number
+  max_people_per_room: number
+  average_cost_of_food_per_day_per_person: number
+  return_flight_cost: number
+  people: JsonRange
+  days: JsonRange
 }
 
 type SimulationRequest = {
@@ -38,9 +69,13 @@ type SimulationResult = {
   costPerDayPerPerson: number
 }
 
-class SimulationFetcher extends Component {
-  constructor(props: SimulationRequest) {
-    super(props);
+export class SimulationFetcher extends Component<any, SimulationFetcherState> {
+  constructor() {
+    super({});
+    this.state = {
+      isLoading: true,
+      result: ""
+    }
   }
 
   componentDidMount() {
@@ -66,21 +101,76 @@ class SimulationFetcher extends Component {
       averageCostOfFoodPerDayPerPerson: 7,
       returnFlightCost: 124,
       people: {
-        min: 2,
-        max: 3
+        minimum: 2,
+        maximum: 3
       },
       days: {
-        min: 5,
-        max: 6
+        minimum: 5,
+        maximum: 6
       }
-    }
+    };
 
-    // AJAX
+    this.sendRequest(request)
+    .then((result) => {
+      this.setState({
+        isLoading: false,
+        result: JSON.stringify(result)
+      });
+    })
+    .catch((result) => {
+      this.setState({
+        isLoading: false,
+        result: JSON.stringify(result)
+      });
+    })
+  }
+
+  async sendRequest(request: SimulationRequest) {
+    const API_URL = 'https://api.tripsim.shepherdjerred.com';
+    return (await axios.post(API_URL, this.requestToJsonRequest(request))).data;
+  }
+
+  requestToJsonRequest(request: SimulationRequest): JsonSimulationRequest {
+    return {
+      vehicles: this.vehiclesToJsonVehicles(request.vehicles),
+      distance: request.distance,
+      average_cost_per_gallon_of_gas: request.averageCostPerGallonOfGas,
+      average_cost_per_night_at_hotel: request.averageCostPerNightAtHotel,
+      max_people_per_room: request.maxPeoplePerRoom,
+      average_cost_of_food_per_day_per_person: request.averageCostOfFoodPerDayPerPerson,
+      return_flight_cost: request.returnFlightCost,
+      people: this.rangeToJsonRange(request.people),
+      days: this.rangeToJsonRange(request.days)
+    }
+  }
+
+  vehiclesToJsonVehicles(vehicles: Vehicle[]): JsonVehicle[] {
+    return vehicles.map((vehicle) => {
+      return this.vehicleToJsonVehicle(vehicle)
+    });
+  }
+
+  vehicleToJsonVehicle(vehicle: Vehicle): JsonVehicle {
+    return {
+      name: vehicle.name,
+      capacity: vehicle.capacity,
+      cost_per_day: vehicle.costPerDay,
+      miles_per_gallon: vehicle.milesPerGallon
+    }
+  }
+
+  rangeToJsonRange(range: Range): JsonRange {
+    return {
+      min: range.minimum,
+      max: range.maximum
+    }
   }
 
   render() {
     return (
-        <h1>Render function!</h1>
+        <Loader isLoading={this.state.isLoading}>
+          {this.state.result}
+        </Loader>
     )
   }
 }
